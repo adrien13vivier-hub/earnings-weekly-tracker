@@ -14,8 +14,10 @@ Identifier chaque semaine les **10 sociétés cotées présentant le meilleur po
 earnings-weekly-tracker/
 ├── README.md
 ├── weeks/
-│   ├── 2026-W20_12-17-mai.md          ← Rapport narratif
-│   └── 2026-W20_12-17-mai.csv         ← Données tabulaires
+│   ├── 2026-W20_12-17-mai.md          ← Rapport W20
+│   ├── 2026-W20_12-17-mai.csv         ← Données W20
+│   ├── 2026-W21_18-22-mai.md          ← Rapport W21 ✅ NEW
+│   └── 2026-W21_18-22-mai.csv         ← Données W21 ✅ NEW
 ```
 
 ## 📐 Critères d'analyse
@@ -38,6 +40,13 @@ Chaque société reçoit un **score global /100** basé sur :
 - Probabilité de beat earnings
 - Réaction potentielle positive du marché
 - Niveau de risque maîtrisé
+
+## 📅 Historique des semaines
+
+| Semaine | Période | Top Pick | Score |
+|---------|---------|----------|-------|
+| W20 | 12–17 mai 2026 | Cisco Systems (CSCO) | 84/100 |
+| W21 | 18–22 mai 2026 | NVIDIA (NVDA) | 92/100 |
 
 ---
 
