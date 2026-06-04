@@ -3,16 +3,15 @@ name: 📊 Earnings Weekly Tracker
 on:
   schedule:
     # Tous les lundis à 9h00 heure de Paris
-    # CEST (été) = UTC+2  → 09:00 Paris = 07:00 UTC
+    # CEST (été)  = UTC+2 → 09:00 Paris = 07:00 UTC
     # CET  (hiver) = UTC+1 → 09:00 Paris = 08:00 UTC
-    # On utilise 07:00 UTC pour couvrir l'heure d'été
     - cron: '0 7 * * 1'
 
   # Déclenchement manuel depuis l'onglet Actions
   workflow_dispatch:
     inputs:
       week_override:
-        description: 'Semaine à générer (ex: 2026-W25) — laisser vide pour la semaine courante'
+        description: 'Semaine à générer (ex: 2026-W25) — laisser vide pour semaine courante'
         required: false
         default: ''
 
@@ -34,8 +33,7 @@ jobs:
           python-version: '3.11'
 
       - name: 📦 Installation des dépendances
-        run: |
-          pip install requests python-dateutil
+        run: pip install requests python-dateutil
 
       - name: 📊 Génération du rapport hebdomadaire
         env:
@@ -48,5 +46,9 @@ jobs:
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "GitHub Actions Bot"
           git add weeks/ README.md
-          git diff --staged --quiet || git commit -m "📊 Auto-update semaine $(python3 -c "import datetime; d=datetime.date.today(); print(f'{d.year}-W{d.isocalendar()[1]:02d}')") — $(date +'%d %b %Y')"
+          # Calcul de la semaine via Python dans une variable shell séparée
+          # pour éviter tout conflit de guillemets dans le message de commit
+          WEEK_LABEL=$(python3 -c 'import datetime; d=datetime.date.today(); print(f"{d.year}-W{d.isocalendar()[1]:02d}")')
+          DATE_LABEL=$(date +'%d %b %Y')
+          git diff --staged --quiet || git commit -m "📊 Auto-update ${WEEK_LABEL} — ${DATE_LABEL}"
           git push
