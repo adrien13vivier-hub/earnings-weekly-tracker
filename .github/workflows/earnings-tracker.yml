@@ -1,0 +1,52 @@
+name: 📊 Earnings Weekly Tracker
+
+on:
+  schedule:
+    # Tous les lundis à 9h00 heure de Paris
+    # CEST (été) = UTC+2  → 09:00 Paris = 07:00 UTC
+    # CET  (hiver) = UTC+1 → 09:00 Paris = 08:00 UTC
+    # On utilise 07:00 UTC pour couvrir l'heure d'été
+    - cron: '0 7 * * 1'
+
+  # Déclenchement manuel depuis l'onglet Actions
+  workflow_dispatch:
+    inputs:
+      week_override:
+        description: 'Semaine à générer (ex: 2026-W25) — laisser vide pour la semaine courante'
+        required: false
+        default: ''
+
+jobs:
+  generate-weekly-report:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: 📥 Checkout du repo
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 🐍 Setup Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: 📦 Installation des dépendances
+        run: |
+          pip install requests python-dateutil
+
+      - name: 📊 Génération du rapport hebdomadaire
+        env:
+          FINNHUB_API_KEY: ${{ secrets.FINNHUB_API_KEY }}
+          WEEK_OVERRIDE: ${{ github.event.inputs.week_override }}
+        run: python scripts/generate_weekly_report.py
+
+      - name: 🚀 Commit et push des fichiers générés
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "GitHub Actions Bot"
+          git add weeks/ README.md
+          git diff --staged --quiet || git commit -m "📊 Auto-update semaine $(python3 -c "import datetime; d=datetime.date.today(); print(f'{d.year}-W{d.isocalendar()[1]:02d}')") — $(date +'%d %b %Y')"
+          git push
